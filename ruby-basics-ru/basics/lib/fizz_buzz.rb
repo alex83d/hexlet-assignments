@@ -17,5 +17,3 @@ def fizz_buzz(start, stop)
   else result = nil   end
   (!result.nil?) ? result.strip : result
 end
-
-p fizz_buzz(7,30)
