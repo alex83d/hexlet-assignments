@@ -8,5 +8,4 @@ def anagramm_filter(word, list)
     elem.chars.sort.join == word_sorted
   end
 end
-
 # END

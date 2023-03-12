@@ -4,14 +4,14 @@
 # ### Методы ###
 # Метод — функция, принадлежащая объекту
 def printer
-  print 'Hey!'
+  print "Hey!"
 end
 
 # Функция say_hey определена внутри метода printer, но не вызывается из него
 # Чтобы принудительно вызвать say_hey, нам нужно обратиться к ней через printer
 def printer
   def say_hey
-    print 'Hey!'
+    print "Hey!"
   end
 end
 
@@ -21,7 +21,7 @@ printer.say_hey
 # # *******************************************
 # ### Блоки ###
 # Пример из прошлого урока
-array = %w[a b c d e f g h i j]
+array = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
 
 # Блок задается со слова do и заканчивается словом end
 array.each do |letter|
@@ -55,21 +55,22 @@ company_name.each_char { |char| puts char }
 
 # yield - (англ. «уступить»)
 def method_with_block
-  puts 'Начинаем выполнять method_with_block'
+  puts "Начинаем выполнять method_with_block"
   yield
-  puts 'Продолжаем выполнять method_with_block'
+  puts "Продолжаем выполнять method_with_block"
 end
 
-method_with_block { puts 'Выполняем блок, переданный в method_with_block' }
+method_with_block { puts "Выполняем блок, переданный в method_with_block" }
 #=> "Начинаем выполнять method_with_block"
 #=> "Выполняем блок, переданный в method_with_block"
 #=> "Продолжаем выполнять method_with_block"
+
 
 # yield с аргументами
 def method_with_block
   # Передаваемые в yield атрибуты соответствуют переменным в списке, ограниченным вертикальными чертами
   yield 5
-  puts 'Продолжаем выполнять my_method'
+  puts "Продолжаем выполнять my_method"
 end
 
 method_with_block { |count| puts "Выполняем блок с count равным #{count}" }
@@ -79,7 +80,7 @@ method_with_block { |count| puts "Выполняем блок с count равн�
 # Вызов метода с yield без блока
 def method_with_block
   yield
-  puts 'Привет из метода'
+  puts "Привет из метода"
 end
 
 method_with_block
@@ -88,7 +89,7 @@ method_with_block
 # block_given?
 def method_with_block
   yield if block_given?
-  puts 'Привет из метода'
+  puts "Привет из метода"
 end
 
 method_with_block
@@ -105,11 +106,11 @@ company_name.each_char { |char| puts char }
 
 # Одинаковы ли вызовы выше? У {} приоритет выше, чем у do/end
 
-def say_hey
+def say_hey(&block)
   yield if block_given?
 end
 
-def printer(greeting)
+def printer(greeting, &block)
   greeting
   puts 'John!'
 end
@@ -132,7 +133,7 @@ printer say_hey { puts 'Hey!' }
 # Прямолинейный путь
 class Array
   def increase!(number)
-    each_with_index do |n, i|
+    self.each_with_index do |n, i|
       self[i] = n + number
     end
   end
@@ -146,7 +147,7 @@ array.increase!(1)
 # Используя блоки
 class Array
   def iterate!
-    each_with_index do |n, i|
+    self.each_with_index do |n, i|
       self[i] = yield(n)
     end
   end
@@ -155,7 +156,7 @@ end
 array = [1, 2, 3, 4]
 
 array.iterate! { |n| n + 1 }
-array.iterate! { |n| n**2 }
+array.iterate! { |n| n ** 2 }
 
 # # *******************************************
 # ### Proc ###
@@ -165,13 +166,13 @@ array.iterate! { |n| n**2 }
 
 class Array
   def iterate!(function)
-    each_with_index do |n, i|
+    self.each_with_index do |n, i|
       self[i] = function.call(n) # либо .() .[] .===
     end
   end
 end
 
-proc_object = proc do |n|
+proc_object = Proc.new do |n|
   n + 1
 end
 
@@ -185,7 +186,7 @@ array.iterate! { |n| n + 1 }
 # Напишем тот же самый метод иным способом
 class Array
   def iterate!(&function)
-    each_with_index do |n, i|
+    self.each_with_index do |n, i|
       self[i] = function.call(n)
     end
   end
@@ -196,7 +197,7 @@ array = [1, 2, 3, 4]
 array.iterate! { |n| n + 1 }
 
 # А как мы получили рабочий код? Что такое &function?
-proc_object = proc {} # либо proc {}
+proc_object = Proc.new {} # либо proc {}
 
 def what_am_i(function, &block)
   puts function.class
@@ -216,8 +217,8 @@ def callbacks(functions)
 end
 
 callbacks(
-  starting: proc { puts 'Начинаю' },
-  finishing: proc { puts 'Заканчиваю' }
+  starting: Proc.new { puts 'Начинаю' },
+  finishing: Proc.new { puts 'Заканчиваю' },
 )
 
 # Когда вы должны использовать блоки вместо Proc?
@@ -237,44 +238,43 @@ lambda_object = lambda do |n|
   n + 1
 end
 
-lambda_object = ->(n) { n + 1 }
+lambda_object = lambda { |n| n + 1 }
 
-lambda_object = ->(n) { n + 1 }
+lambda_object = -> (n) { n + 1 }
 
 # лямбды работают схоже с Proc, убедимся в этом:
 class Array
   def iterate!(code)
-    each_with_index do |n, i|
-      self[i] = code.call(n)
+    self.each_with_index do |n, i|
+      self[i] = code.(n)
     end
   end
 end
 
 array = [1, 2, 3, 4]
 
-array.iterate!(->(n) { n + 1 })
+array.iterate!(lambda { |n| n + 1 })
 
 # Отличие 1. Лямбды проверяют количество переданных аргументов
 def arguments(function)
-  one = 1
-  two = 2
+  one, two = 1, 2
   function.call(one, two)
 end
 
 arguments(proc { |a, b, c| puts "Я хочу получить аругменты #{a} и #{b} и класс аргумента #{c.class}" })
-arguments(->(a, b, c) { puts "Я хочу получить аругменты #{a} и #{b} и класс аргумента #{c.class}" })
+arguments(lambda { |a, b, c| puts "Я хочу получить аругменты #{a} и #{b} и класс аргумента #{c.class}" })
 
 # Отличие 2. слово return работает по-разному
 def proc_return
   puts proc { return 'Метод показал эту запись' }.call
 
-  'Метод доработал до конца и вернул эту запись'
+  return 'Метод доработал до конца и вернул эту запись'
 end
 
 def lambda_return
-  puts -> { return 'Метод показал эту запись' }.call
+  puts lambda { return 'Метод показал эту запись' }.call
 
-  'Метод доработал до конца и вернул эту запись'
+  return 'Метод доработал до конца и вернул эту запись'
 end
 
 puts proc_return
@@ -282,18 +282,14 @@ puts lambda_return
 
 # Когда стоит использовать lambda?
 def generic_return(code)
-  one = 1
-  two = 2
+  one, two = 1, 2
   three, four = code.call(one, two)
-  "Give me a #{three} and a #{four}"
+  return "Give me a #{three} and a #{four}"
 end
 
-puts generic_return(->(x, y) { return x + 2, y + 2 })
+puts generic_return(lambda { |x, y| return x + 2, y + 2 })
 puts generic_return(proc { |x, y| return x + 2, y + 2 })
-puts generic_return(proc { |x, y|
-  x + 2
-  y + 2
-})
+puts generic_return(proc { |x, y| x + 2; y + 2 })
 puts generic_return(proc { |x, y| [x + 2, y + 2] })
 
 # Когда вы должны использовать lambda вместо Proc?
@@ -303,14 +299,14 @@ puts generic_return(proc { |x, y| [x + 2, y + 2] })
 # Зарезервированное слово method
 class Array
   def iterate!(function)
-    each_with_index do |n, i|
+    self.each_with_index do |n, i|
       self[i] = function.call(n)
     end
   end
 end
 
 def square(n)
-  n**2
+  n ** 2
 end
 
 array = [1, 2, 3, 4]
@@ -333,22 +329,22 @@ numbers = [1, 2, 3, 4, 5]
 result_each = numbers.each { |number| puts number * number }
 
 # collect
-chars = %w[a b c d]
+chars = [ 'a', 'b', 'c', 'd' ]
 
-chars.collect(&:upcase)
+chars.collect { |x| x.upcase }
 
 chars.collect(&:upcase)
 
 chars.collect(:upcase) # `collect': wrong number of arguments (given 1, expected 0) (ArgumentError)
 
 # filter
-[1, 2, 3, 4, 5].filter(&:even?)
+[1, 2, 3, 4, 5].filter {|num| num.even? }
 
 # select
-[1, 2, 3, 4, 5].select(&:even?)
+[1, 2, 3, 4, 5].select {|num| num.even? }
 
 # reject
-[1, 2, 3, 4, 5].reject(&:even?)
+[1, 2, 3, 4, 5].reject {|num| num.even? }
 
 # inject
 (5..10).inject(1) { |product, n| product + n }
@@ -368,14 +364,15 @@ proc { |x, y| proc { |z| x + y + z } }
 # Разделение функции, принимающей несколько аргументов, на N функций, принимающих один аргумент.
 proc { |x, y, z| x + y + z }
 # Каррированная функция выглядит так
-proc { |x| proc { |y| proc { |z| x + y + z } } }
+proc { |x| proc { |y| proc { |z| x + y + z} } }
 
 # # *******************************************
 # ### Продвинутая работа с аргументами ###
 
 numbers(1, 2, 3, 4, 5, 6, 7, 8)
 
-def numbers(one, two, three, four, five, six, seven, eight); end
+def numbers(one, two, three, four, five, six, seven, eight)
+end
 
 # Заберет в массив args
 def numbers(*args)
@@ -416,9 +413,9 @@ end
 initials(first_name: 'John', last_name: 'Doe')
 
 # Передать аргументы и блок
-def method_with_args_and_block(*args, **kwargs)
+def method_with_args_and_block(*args, **kwargs, &block)
   array_word = args.join(', ')
-  hash_word = kwargs.each_with_object('') { |(k, v), str| str << "#{k}:#{v}, " }
+  hash_word = kwargs.each_with_object('') { |(k,v), str| str << "#{k}:#{v}, " }
   yield array_word, hash_word if block_given?
 end
 
