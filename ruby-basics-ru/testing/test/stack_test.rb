@@ -10,7 +10,7 @@ class StackTest < Minitest::Test
   end
 
   def test_add_element
-    elem = @stack.push! "el"
+    elem = @stack.push! 'el'
     elem.to_a
     assert { elem.size == 1 }
   end
@@ -22,8 +22,8 @@ class StackTest < Minitest::Test
   end
 
   def test_clear_stack
-    @stack.push! "one"
-    @stack.push! "two"
+    @stack.push! 'one'
+    @stack.push! 'two'
     @stack.to_a
     assert { @stack.clear! == [] }
   end
