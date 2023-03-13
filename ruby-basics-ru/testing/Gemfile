@@ -6,5 +6,3 @@ source 'https://rubygems.org'
 gem 'minitest'
 gem 'minitest-power_assert'
 # END
-
-gem "ruby-lsp", "~> 0.4.1", :group => :development, :require => false
