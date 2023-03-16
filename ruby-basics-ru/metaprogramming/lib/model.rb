@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 # BEGIN
-# Model
 module Model
   def self.included(base)
     base.extend(ClassMethods)
@@ -73,5 +72,6 @@ module Model
     send("#{name}=", value)
   end
 end
+
 
 # END
