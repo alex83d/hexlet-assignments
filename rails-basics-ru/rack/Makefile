@@ -1,5 +1,8 @@
 setup: install
 
+start:
+	bundle exec thin start
+
 install:
 	bundle install
 
